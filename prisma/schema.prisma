@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  createdAt DateTime?  @db.Date
+  user      user       @relation(fields: [userId], references: [id])
+  category  category[]
+
+  @@index([userId], name: "user_id")
+}
+
+model belongstodeck {
+  cardId Int
+  deckId Int
+  card   card @relation(fields: [cardId], references: [id])
+  deck   deck @relation(fields: [deckId], references: [id])
+
+  @@id([cardId, deckId])
+  @@index([deckId], name: "deckId")
+}
+
+model card {
+  id             Int             @id @default(autoincrement())
+  question       String          @db.VarChar(350)
+  answer         String          @db.VarChar(350)
+  deckId         Int
+  createdAt      DateTime?       @db.Date
+  updatedAt      DateTime?       @db.Date
+  repetition     Int?
+  nextOccurrence DateTime?       @db.Date
+  deck           deck            @relation(fields: [deckId], references: [id])
+  belongstodeck  belongstodeck[]
+
+  @@index([deckId], name: "deckId")
+}
+
+model category {
+  id             Int        @id @default(autoincrement())
+  categoryName   String     @db.VarChar(150)
+  accountId      Int
+  expertise      Int?
+  createdAt      DateTime?  @db.Date
+  parentId       Int?
+  account        account    @relation(fields: [accountId], references: [id])
+  category       category?  @relation("categoryTocategory_parentId", fields: [parentId], references: [id])
+  other_category category[] @relation("categoryTocategory_parentId")
+  deck           deck[]
+
+  @@index([accountId], name: "accountId")
+  @@index([parentId], name: "parentId")
+}
+
+model deck {
+  id            Int             @id @default(autoincrement())
+  deckName      String          @db.VarChar(150)
+  categoryId    Int
+  createdAt     DateTime?       @db.Date
+  updatedAt     DateTime?       @db.Date
+  repetition    Int?
+  expertise     Int?
+  category      category        @relation(fields: [categoryId], references: [id])
+  belongstodeck belongstodeck[]
+  card          card[]
+
+  @@index([categoryId], name: "categoryId")
+}
+
+model user {
+  id       Int       @id @default(autoincrement())
+  username String    @db.VarChar(150)
+  password String    @db.VarChar(150)
+  email    String    @db.VarChar(250)
+  token    String?   @db.VarChar(250)
+  account  account[]
+}
