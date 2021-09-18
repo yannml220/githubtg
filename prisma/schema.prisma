@@ -49,6 +49,8 @@ model category {
   expertise      Int?
   createdAt      DateTime?  @db.Date
   parentId       Int?
+  description    String?    @db.VarChar(550)
+  subject        String?    @db.VarChar(200)
   account        account    @relation(fields: [accountId], references: [id])
   category       category?  @relation("categoryTocategory_parentId", fields: [parentId], references: [id])
   other_category category[] @relation("categoryTocategory_parentId")

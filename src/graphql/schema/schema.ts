@@ -1,7 +1,7 @@
 
 
 import {IContext} from '../interface'
-import {  GraphQLObjectType ,  GraphQLString , GraphQLInt , GraphQLID , GraphQLList , GraphQLSchema, GraphQLFloat } from "graphql"
+import {  GraphQLObjectType ,  GraphQLString , GraphQLInt , GraphQLID , GraphQLList , GraphQLSchema, GraphQLFloat, GraphQLBoolean } from "graphql"
 import  { AccountType } from './types/accountType'
 import  { CardType } from './types/cardType'
 import  { CategoryType } from './types/categoryType'
@@ -124,6 +124,13 @@ const RootQueryType = new GraphQLObjectType({
             args : { id : {type : GraphQLString} } ,
             resolve : userResolvers.Query.user
         }
+        ,
+
+        category : {
+            type : new GraphQLList(CategoryType) ,
+            args : { accountId : { type  : GraphQLString} } ,
+            resolve : categoryResolvers.Query.getUserCategories
+        }
     }
 })
 
@@ -158,12 +165,33 @@ const Mutation = new GraphQLObjectType({
 
             categoryName : { type : GraphQLString } ,
             accountId  : { type : GraphQLID} ,
+            description : { type : GraphQLString},
+            subject : { type : GraphQLString } ,
+            parentId : {type : GraphQLID}
            
            
            },
            resolve : categoryResolvers.Mutation.createCategory
            
        } ,
+    
+       deleteCategories  :{
+           type : CategoryType ,
+           args  : {
+               ids  : { type : new GraphQLList(GraphQLID) }
+           },
+           resolve : categoryResolvers.Mutation.deleteCategories
+       }
+
+       ,
+       deleteCategory : {
+           type : CategoryType ,
+           args : {
+               id : { type : GraphQLID }
+           },
+           resolve : categoryResolvers.Mutation.deleteCategory
+       }
+       ,
 
        createDeck : {
            type : DeckType ,

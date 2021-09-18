@@ -75,17 +75,19 @@ export  const userResolvers = {
                 const user = await context.prisma.user.findFirst({
                     where : { username : username }
                 })
+
+                if(!user) return false
                 
                 const valid = verifyPassword(password ,  user.password)
                 console.log(valid)
-                if(!user  || !valid){
+                if( !valid){
                     
-                   context.res.json({connected : false})
+                   return false
                 }
                 else {
                     const accessToken = getAccessToken({ username , password , email : user.email  })
                     const userInfos = { userInfos : { id :  user.id  ,   username  , email : user.email , accessToken   } }
-                    context.res.json(userInfos)
+                  
                     return user
 
                 }

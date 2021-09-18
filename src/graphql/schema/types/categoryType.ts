@@ -11,7 +11,11 @@ export const CategoryType = new GraphQLObjectType({
         categoryName : { type : GraphQLString} ,
         accountId  : { type : GraphQLID} ,
         expertise : { type : GraphQLFloat } ,
+        parentId : {type : GraphQLID} ,
         createdAt : { type : GraphQLString},
+        description : { type : GraphQLString} ,
+        subject : { type : GraphQLString } ,
+
         account : {
             type : AccountType ,
             resolve : async (parent , args , context : ITypeContext )=>{
